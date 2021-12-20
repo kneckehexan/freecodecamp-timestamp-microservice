@@ -34,11 +34,21 @@ app.get('/api/:date?', (req, res, next) => {
   req.time = new Date(reDate);
   next();
 }, (req, res) => {
-  console.log(req.time.getTime())
-  if(Object.prototype.toString.call(req.time) !== '[object Date]'){
-    res.json({error: 'Invalid Date'});
+  if (Object.prototype.toString.call(req.time) === "[object Date]") {
+      // it is a date
+    if (isNaN(req.time.getTime())) {
+      // d.valueOf() could also work
+      return res.json({ error: "Invalid Date" });
+    } else {
+      // date is valid
+      return res.json({
+        unix: req.time.getTime(),
+        utc: req.time.toUTCString()
+      });
+    }
   } else {
-    res.json({unix: req.time.getTime(), utc: req.time.toUTCString()});
+    // not a date
+    return res.json({ error: "Invalid Date" });
   }
 });
 
